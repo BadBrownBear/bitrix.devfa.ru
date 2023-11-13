@@ -22,6 +22,7 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
                     <tr>
                         <th colspan="3" scope="row"><?=$number;?></th>
                     </tr>
+                    <?if(!empty($events)):?>
                     <?foreach ($events as $event):?>
                             <tr class="<?=$event["class"];?>">
                             <td><?=$event["DateEvent"];?></td>
@@ -29,6 +30,11 @@ if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
                             <td><?=$event["InfoEvent"];?></td>
                         </tr>
                     <?endforeach;?>
+                    <?else:?>
+                        <tr>
+                            <td colspan="3"><?=GetMessage("NO_NUMBER");?></td>
+                        </tr>
+                    <?endif;?>
                 <?endforeach;?>
             </tbody>
         </table>

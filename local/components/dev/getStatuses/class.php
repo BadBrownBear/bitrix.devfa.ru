@@ -1,13 +1,14 @@
 <?php
 use \Bitrix\Main\Loader;
 use \Bitrix\Main\Application;
+use \Bitrix\Main\Localization\Loc;
 
 if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die();
 
 class CGetStatuses extends CBitrixComponent {
     private function _checkModules() {
         if(!Loader::includeModule('iblock'))
-            throw new \Exception('Отсутвует установленный модуль iBlock');
+            throw new \Exception(Loc::GetMessage("NO_IBLOCK"));
         return true;
     }
 
@@ -57,7 +58,7 @@ class CGetStatuses extends CBitrixComponent {
 
     public function listNumbers() {
         $this->finalStatuses = [];
-        $res = CIBlockElement::GetList([], ["IBLOCK_ID" => $this->arParams["IBLOCK_ID_STATUSES"], "ACTIVE" => "Y", "PROPERTY_FINAL_STATUS_VALUE" => "Да"], false, false, ["ID"]);
+        $res = CIBlockElement::GetList([], ["IBLOCK_ID" => $this->arParams["IBLOCK_ID_STATUSES"], "ACTIVE" => "Y", "PROPERTY_FINAL_STATUS_VALUE" => Loc::GetMessage("YES_VALUE")], false, false, ["ID"]);
         while($ob = $res->GetNextElement())
         {
             $arFields = $ob->GetFields();
@@ -78,8 +79,19 @@ class CGetStatuses extends CBitrixComponent {
         foreach ($this->data as $number => $events) {    
             $number_id = array_search($number, $this->arNumbers); 
             foreach ($events as $key => $event) {
-                $status_id = $this->statuses[$event["Event"]];
-                //TODO Обработка неизвестного статуса
+                if (isset($this->statuses[$event["Event"]])) {
+                    $status_id = $this->statuses[$event["Event"]];
+                }
+                else {
+                    $el = new CIBlockElement;
+                    $status_id = $el->Add([
+                        "IBLOCK_SECTION_ID" => false,
+                        "IBLOCK_ID" => $this->arParams["IBLOCK_ID_STATUSES"],
+                        "NAME" => $event["Event"],
+                        "ACTIVE" => "Y"
+                    ]);
+                    $this->statuses[$event["Event"]] = $status_id;
+                }
                 $stmp = MakeTimeStamp($event["DateEvent"], "DD.MM.YYYY HH:MI:SS");
                 $filter = [
                     "IBLOCK_ID" => $this->arParams["IBLOCK_ID_EVENTS"], 
