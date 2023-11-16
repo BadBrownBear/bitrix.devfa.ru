@@ -26,7 +26,7 @@ class CGetStatuses extends CBitrixComponent {
         return $arParams;
     }
 
-    public function executeComponent() {
+    public function executeComponent(): void {
         $this->_checkModules();
         $this->getData();
         if (!empty($this->data))
@@ -36,7 +36,7 @@ class CGetStatuses extends CBitrixComponent {
         $this->includeComponentTemplate();
     }
 
-    public function getData() {
+    public function getData(): void {
         $this->data = [];
         $this->listNumbers();
         if (!empty($this->arNumbers)) {
@@ -56,7 +56,7 @@ class CGetStatuses extends CBitrixComponent {
         }
     }
 
-    public function listNumbers() {
+    public function listNumbers(): void {
         $this->finalStatuses = [];
         $res = CIBlockElement::GetList([], ["IBLOCK_ID" => $this->arParams["IBLOCK_ID_STATUSES"], "ACTIVE" => "Y", "PROPERTY_FINAL_STATUS_VALUE" => Loc::GetMessage("YES_VALUE")], false, false, ["ID"]);
         while($ob = $res->GetNextElement())
@@ -74,7 +74,7 @@ class CGetStatuses extends CBitrixComponent {
     }
 
 
-    public function updateData() {
+    public function updateData(): void {
         $this->allStatuses();
         foreach ($this->data as $number => $events) {    
             $number_id = array_search($number, $this->arNumbers); 
@@ -127,7 +127,7 @@ class CGetStatuses extends CBitrixComponent {
     }
 
 
-    public function allStatuses() {
+    public function allStatuses(): void {
         $this->statuses = [];
         $res = CIBlockElement::GetList(["name"=>"asc"], ["IBLOCK_ID" => $this->arParams["IBLOCK_ID_STATUSES"], "ACTIVE" => "Y"], false, false, ["ID", "NAME"]);
         while($ob = $res->GetNextElement())
